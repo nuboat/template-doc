@@ -22,7 +22,7 @@
 Thumbs.db
 
 # Output
-*.pdf
+main.pdf
 *.log
 
 # Editor files
