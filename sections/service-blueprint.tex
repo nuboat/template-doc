@@ -1,0 +1,141 @@
+\subsection{Service Blueprint}
+
+Service Blueprint สำหรับระบบ SSO ที่รองรับการทำงาน 2 รูปแบบ (LDAP และ OAuth ผ่าน IDM) โดยจัดเรียงตาม Customer Journey ตั้งแต่เริ่มต้นจนถึงการ Redirect กลับไปยังแอปพลิเคชันต้นทาง
+
+Table 1: Flow: LDAP Authentication
+
+\begin{tabular}{|p{3cm}|p{3cm}|p{3cm}|p{3cm}|p{3cm}|}
+\hline
+\textbf{ระยะที่} & \textbf{หน่วยงาน/ผู้ใช้} & \textbf{SSO System} & \textbf{Backend/Infra} & \textbf{Service ต้นทาง} \\
+\hline
+\textbf{เข้าสู่ระบบ} & \begin{minipage}[t]{2.5cm}\raggedright
+ผู้ใช้พยายามเข้าใช้งาน Service (ยังไม่ได้ Login)
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ หน้าจอ Login SSO, URL ของ SSO, ฟอร์มกรอกข้อมูล, ปุ่ม "Login With IDM"
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+DNS, Network Routing
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+Service ต้นทางตรวจสอบ พบว่าไม่มี Session จึง Redirect ผู้ใช้มาที่ SSO
+\end{minipage} \\
+\hline
+\textbf{หน้า SSO Portal} & \begin{minipage}[t]{2.5cm}\raggedright
+ดูตัวเลือกการ Login บนหน้าจอ
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ แสดงหน้าจอ SSO Portal พร้อมฟอร์ม LDAP และปุ่ม OAuth
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+Web Server (Nginx/Apache)
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ รับ Request จาก Service ต้นทางและบันทึก Return URL (Callback) ไว้
+\end{minipage} \\
+\hline
+\textbf{ทางเลือก LDAP} & \begin{minipage}[t]{2.5cm}\raggedright
+พิมพ์ Username และ Password แล้วกดปุ่ม "Sign In"
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ ช่องกรอก Username/Password บนหน้า SSO
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+LDAP Directory Server: ตรวจสอบ Bind Credentials และส่งผลลัพธ์กลับมา (Pass/Fail)
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ SSO Backend รับ Credentials และทำหน้าที่ เป็นตัวกลางเพื่อคุยกับ LDAP
+\end{minipage} \\
+\hline
+\textbf{ยืนยันสิทธิ} & \begin{minipage}[t]{2.5cm}\raggedright
+(รอระบบประมวลผล)
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ หน้าจอ Loading / เปลี่ยน URL กลับไปยัง Service ต้นทาง
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ Database/Cache: บันทึก Session ข้อมูลผู้ใช้, Token Generator: ออก JWT หรือสัญลักษณ์ยืนยันตัวตน
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ รวม 2 เส้นทาง: ตรวจสอบความถูกต้อง, สร้าง SSO Session, สร้าง Auth Code/Token สำหรับ Service
+\end{minipage} \\
+\hline
+\textbf{เข้าใช้งานสำเร็จ} & \begin{minipage}[t]{2.5cm}\raggedright
+ใช้งานแอปพลิเคชัน ตามปกติ
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ ปิด Popup (กรณี 3B) และทำการ Redirect หน้าต่างหลักกลับไปยัง Service ต้นทาง
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+SSO Validation API: ให้บริการ Service ต้นทางในการตรวจสอบ Tokens
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ นำ Token/Code ที่ได้ มาใช้งาน
+\end{minipage} \\
+\hline
+\end{tabular}
+
+
+\newpage
+Table 2: Flow: OAuth Authentication (ผ่าน IDM)
+
+\begin{tabular}{|p{3cm}|p{3cm}|p{3cm}|p{3cm}|p{3cm}|}
+\hline
+\textbf{ระยะที่} & \textbf{หน่วยงาน/ผู้ใช้} & \textbf{SSO System} & \textbf{Backend/Infra} & \textbf{Service ต้นทาง} \\
+\hline
+\textbf{เข้าสู่ระบบ} & \begin{minipage}[t]{2.5cm}\raggedright
+ผู้ใช้พยายามเข้าใช้งาน Service (ยังไม่ได้ Login)
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ หน้าจอ Login SSO, URL ของ SSO, ฟอร์มกรอกข้อมูล, ปุ่ม "Login With IDM"
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+DNS, Network Routing
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+Service ต้นทางตรวจสอบ พบว่าไม่มี Session จึง Redirect ผู้ใช้มาที่ SSO
+\end{minipage} \\
+\hline
+\textbf{หน้า SSO Portal} & \begin{minipage}[t]{2.5cm}\raggedright
+ดูตัวเลือกการ Login บนหน้าจอ
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ แสดงหน้าจอ SSO Portal พร้อมฟอร์ม LDAP และปุ่ม OAuth
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+Web Server (Nginx/Apache)
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ รับ Request จาก Service ต้นทางและบันทึก Return URL (Callback) ไว้
+\end{minipage} \\
+\hline
+\textbf{ทางเลือก OAuth (ผ่าน IDM)} & \begin{minipage}[t]{2.5cm}\raggedright
+\ คลิกปุ่ม "Login With IDM" -> พิมพ์ Username/Password ใน Popup
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ Popup Window หน้าจอ Login ของระบบ IDM (URL ของ IDM)
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+IDM Server: รับรองความถูกต้อง, ส่ง Auth Code กลับมาที่ SSO ผ่าน Callback ใน Popup
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ SSO Backend เตรียม Client ID และ State เพื่อทำ OAuth Flow
+\end{minipage} \\
+\hline
+\textbf{ยืนยันสิทธิ \& Redirect} & \begin{minipage}[t]{2.5cm}\raggedright
+(รอระบบประมวลผล)
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ หน้าจอ Loading / เปลี่ยน URL กลับไปยัง Service ต้นทาง
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ Database/Cache: บันทึก Session ข้อมูลผู้ใช้, Token Generator: ออก JWT หรือสัญลักษณ์ยืนยันตัวตน
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ รวม 2 เส้นทาง: ตรวจสอบความถูกต้อง, สร้าง SSO Session, สร้าง Auth Code/Token สำหรับ Service
+\end{minipage} \\
+\hline
+\textbf{เข้าใช้งานสำเร็จ} & \begin{minipage}[t]{2.5cm}\raggedright
+ใช้งานแอปพลิเคชัน ตามปกติ
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ ปิด Popup (กรณี 3B) และทำการ Redirect หน้าต่างหลักกลับไปยัง Service ต้นทาง
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+SSO Validation API: ให้บริการ Service ต้นทางในการตรวจสอบ Token
+\end{minipage} & \begin{minipage}[t]{2.5cm}\raggedright
+\ นำ Token/Code ที่ได้ มาใช้งาน
+\end{minipage} \\
+\hline
+\end{tabular}
+
+\newpage
+\textbf{การจัดการ Return URL (Redirect):} ตั้งแต่ ระยะที่ 1 ตอนที่ Service ต้นทางเตะผู้ใช้มาที่ SSO ระบบ SSO จะต้องจำค่า \texttt{redirect\_uri} หรือ Return URL เอาไว้เสมอ ไม่ว่าผู้ใช้จะเลือก Login ด้วยวิธีใด เมื่อผ่าน ระยะที่ 4 ระบบจะนำ URL นี้มาใช้เพื่อส่งผู้ใช้กลับไปอย่างถูกต้อง
+
+\bigskip
+
+\textbf{ความแตกต่างของระบบหลังฉาก (Backstage):}
+
+\begin{itemize}
+    \item \textbf{สาย LDAP (3A):} ระบบ SSO ของคุณจะทำตัวเป็นคนไปเคาะประตูถาม LDAP Server โดยตรง (Bind request) รหัสผ่านจะวิ่งผ่าน Server ของ SSO
+    \item \textbf{สาย OAuth / IDM (3B):} รหัสผ่านจะ \textbf{ไม่ผ่าน} Server ของ SSO ผู้ใช้พิมพ์รหัสลงใน Popup ของ IDM โดยตรง SSO จะรอรับแค่ "ตั๋วยืนยัน" (Authorization Code) จาก IDM เพื่อมาประมวลผลต่อเท่านั้น ถือเป็นวิธีที่ปลอดภัยและเป็นมาตรฐานสากลครับ
+\end{itemize}
+
+\bigskip
+
+\textbf{การจัดการ Popup (Frontstage 3B):} ในทางเทคนิค เมื่อผู้ใช้ Login ใน Popup เสร็จแล้ว หน้า Popup จะถูก Redirect กลับมาที่ Callback URL ของ SSO (หน้าต่างลูก) จากนั้นหน้าต่างลูกจะต้องส่งสัญญาณ (เช่น ผ่าน \texttt{window.postMessage}) บอกหน้าต่างหลัก (SSO หลัก) ว่าสำเร็จแล้ว เพื่อให้หน้าต่างหลักจัดการ Redirect กลับไปยัง Service ต้นทาง และทำการปิดหน้าต่าง Popup ทิ้งไปครับ
+
+\includegraphics[width=\textwidth]{figures/image6.png}
+
+\fussy

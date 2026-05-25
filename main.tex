@@ -1,0 +1,47 @@
+\documentclass{easreport}
+
+% ตั้งค่าข้อมูลเอกสาร
+\docversion{1.0}
+\docdate{06 มีนาคม 2569}
+\authorname{พีรพัฒน์ อโศกธรรมรังสี}
+
+% ข้อความชื่อเรื่องหน้าแรก
+\newcommand{\pretitlecontent}{
+	{\Huge\bfseries [TITLE]\par}
+	\vspace{1cm}
+	{\Huge\bfseries [TOPIC]\par}
+}
+
+% Microtype setting
+\microtypecontext{spacing=nonadjacent}
+
+\begin{document}
+	
+	\maketitle
+	
+	\newpage
+	\section{Document Control}
+	\begin{table}[htbp]
+		\centering
+		\begin{tabularx}{\textwidth}{|X|X|X|X|}
+			\hline
+			ฉบับที่ & วันที่ & ผู้เขียน & คำอธิบาย \\ \hline
+			1.0 & 06 มีนาคม 2569 & พีรพัฒน์ อโศกธรรมรังสี & \\ \hline
+		\end{tabularx}
+	\end{table}
+	
+	\newpage
+	\tableofcontents
+	\newpage
+
+\include{sections/togaf}
+\include{sections/a_vision}
+\include{sections/b_business}
+\include{sections/c_system}
+\include{sections/d_technology}
+\include{sections/f_migration}
+\include{sections/security}
+\include{sections/overview}
+\include{sections/install}
+
+\end{document}

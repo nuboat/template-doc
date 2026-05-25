@@ -1,0 +1,30 @@
+# Build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.synctex
+*.synctex.gz
+*.toc
+
+# Temporary files
+*.bak
+*.tmp
+*.pre
+*.xdv
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Output
+*.pdf
+*.log
+
+# Editor files
+.*.swp
+*~

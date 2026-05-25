@@ -1,0 +1,31 @@
+\newpage\sloppy
+\section{Opportunities \& Solutions}
+
+\subsection{E.1 แผนการพัฒนา}
+เนื่องจากเครือข่ายโลจิสติกส์มีความสำคัญอย่างยิ่ง การปรับปรุงแบบ "บิ๊กแบง" จึงมีความเสี่ยงสูงเกินไป การปรับปรุงจึงจะใช้วิธีการเปลี่ยนแพลตฟอร์มและปรับโครงสร้างใหม่แบบเป็นขั้นตอน\par
+
+\begin{itemize}
+    \item \textbf{Re-platform:} แยกส่วนของข้อมูลปัจจุบันกับ ข้อมูลที่จะเกิดขึ้นใหม่ออกจากกัน โดยใช้งานทั้ง LDPA (ปัจจุบัน) กับ local LDAP (AWS)
+    \item \textbf{Refactor:} เปลี่ยนระบบจากการมี Authentication ของตัวเองเป็น Integration เข้ากับ micro servier ที่สร้างขึ้นใหม่มาเพื่อการทำ SSO โดยเฉพาะ \texttt{sso-api}, \texttt{sso-idm}, \texttt{sso-admin}, \texttt{sso-idm-metabase}
+\end{itemize}
+
+\subsection{E.2 Consolidated Gaps, Solutions, and Dependencies Matrix}
+\begin{table}[h]
+  \centering
+  \begin{tabularx}{\textwidth}{|X|X|X|X|}
+    \hline
+    \textbf{Identified Gap (From Phase B-D)} & \textbf{Proposed Solution Building Block (SBB)} & \textbf{Dependency} & \textbf{Risk / Constraint} \\ \hline
+    Fragmented user directories & Deploy centralized \textbf{OpenLDAP} และ \textbf{PostgreSQL} บน AWS. & Data cleansing ของ legacy THP และ EWT databases. & \textbf{Risk:} Data duplication ระหว่าง sync. \textbf{Mitigation:} Establish strict Data Custodianship governance. \\ \hline
+    Monolithic authentication app & Develop sso-api และ sso-idm เป็น containerized microservices. & Availability ของ Kubernetes (EKS) infrastructure. & \textbf{Constraint:} Must comply with ISO 27017 (Cloud Security) ก่อน deployment. \\ \hline
+    Decentralized login portals & Develop a unified \textbf{Signin Portal} ใช้ \textbf{Next.js}. & API Gateway readiness และ OAuth2/SAML integration. & \textbf{Risk:} Resistance จาก regional hubs (เช่น Chiang Mai, Khon Kaen) adapting ต่อ new UI. \\ \hline
+  \end{tabularx}
+\end{table}
+
+\subsection{E.3 Transition Architecture: The "Interim State"}
+ก่อนที่จะบรรลุสถาปัตยกรรมเป้าหมายขั้นสุดท้าย เราจะสร้างสถาปัตยกรรมช่วงเปลี่ยนผ่านชั่วคราวขึ้น ในระหว่างสถานะนี้:\par
+
+\begin{itemize}
+    \item sso-api ใหม่ที่โฮสต์บน AWS จะเปิดใช้งาน
+    \item การจัดสรรผู้ใช้ใหม่ทั้งหมดสำหรับใช้งาน THPCORE และพันธมิตร จะต้องดำเนินการผ่านระบบใหม่นี้อย่างเคร่งครัด เพื่อให้เป็นไปตามบทบาทที่กำหนดไว้
+\end{itemize}
+\fussy
