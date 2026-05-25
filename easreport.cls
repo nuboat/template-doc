@@ -30,6 +30,7 @@
 \widowpenalty=10000
 
 \RequirePackage{microtype}
+\RequirePackage{fancyhdr}
 
 % hyperref settings - remove red border/box
 \hypersetup{
@@ -55,6 +56,22 @@
 \newcommand{\docversion}[1]{\def\@docversion{#1}}
 \newcommand{\docdate}[1]{\def\@docdate{#1}}
 \newcommand{\authorname}[1]{\def\@authorname{#1}}
+\newcommand{\copyrighttext}[1]{\def\@copyrighttext{#1}}
+\newcommand{\headerleft}[1]{\def\@headerleft{#1}}
+\newcommand{\headerright}[1]{\def\@headerright{#1}}
+\def\@copyrighttext{}
+\def\@headerleft{}
+\def\@headerright{}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\@headerleft}
+\fancyhead[R]{\small\@headerright}
+\fancyfoot[C]{\small\@copyrighttext}
+\fancyfoot[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
 
 % Title Page Design
 \renewcommand{\maketitle}{
