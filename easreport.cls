@@ -69,7 +69,7 @@
 \fancyhead[L]{\small\@headerleft}
 \fancyhead[R]{\small\@headerright}
 \fancyfoot[C]{\small\@copyrighttext}
-\fancyfoot[R]{\small\thepage}
+\fancyfoot[R]{\smash{\raisebox{32pt}{\includegraphics[height=3cm]{assets/watermark}}}\quad\small\thepage\hspace{0pt}}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
 
