@@ -15,6 +15,8 @@
 \RequirePackage{longtable}
 \RequirePackage{xcolor}
 \RequirePackage{graphicx}
+\RequirePackage{eso-pic}
+\RequirePackage{tikz}
 \RequirePackage{hyperref}
 \RequirePackage{hyphenat}
 \RequirePackage{ragged2e}
@@ -69,9 +71,18 @@
 \fancyhead[L]{\small\@headerleft}
 \fancyhead[R]{\small\@headerright}
 \fancyfoot[C]{\small\@copyrighttext}
-\fancyfoot[R]{\smash{\raisebox{32pt}{\includegraphics[height=3cm]{assets/watermark}}}\quad\small\thepage\hspace{0pt}}
+\fancyfoot[R]{\small\thepage\hspace{0pt}}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
+
+% Background watermark (bottom-right, aligned to footer right margin, 64% transparent)
+\AddToShipoutPictureBG{%
+  \put(\LenToUnit{\dimexpr\paperwidth-0.7in},\LenToUnit{0.7in}){%
+    \makebox(0,0)[rb]{%
+      \tikz\node[opacity=0.36]{\includegraphics[width=0.5\paperwidth]{assets/watermark}};%
+    }%
+  }%
+}
 
 % Title Page Design
 \renewcommand{\maketitle}{
